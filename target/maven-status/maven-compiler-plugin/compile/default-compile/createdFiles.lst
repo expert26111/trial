@@ -1,0 +1,6 @@
+org\bank\credit\web\service\CreditScoreResponse.class
+org\bank\credit\web\service\package-info.class
+org\bank\credit\web\service\ObjectFactory.class
+org\bank\credit\web\service\CreditScoreService_Service.class
+org\bank\credit\web\service\CreditScoreService.class
+org\bank\credit\web\service\CreditScore.class
