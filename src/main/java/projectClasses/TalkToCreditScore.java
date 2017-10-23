@@ -5,7 +5,9 @@
  */
 package projectClasses;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -33,22 +35,15 @@ import static project.Starter.getFinalAnswers;
  */
 public class TalkToCreditScore 
 {
-  
+    
+            private JsonArray array;           
             private static final ExecutorService threadpool = Executors.newFixedThreadPool(1);
-            //private BankLoan loan; 
             
             public TalkToCreditScore(/*BankLoan loan*/)
             {
-                //this.loan = loan;
             }
-            
-
-            //return JSONObject
-            public JsonObject getYourScore(BankLoan loan) throws InterruptedException, ExecutionException 
+            public JsonArray getYourScore(BankLoan loan) throws InterruptedException, ExecutionException 
             {
-        //             try
-        //             {JsonObject feetback
-                
                                   JsonObject feetback = null;
                                   GetBaseScore task = new GetBaseScore(loan.getSsn());
                                   System.out.println("Submitting Task ..."); 
@@ -71,7 +66,13 @@ public class TalkToCreditScore
                                         publish.sendToTRanslators();
                                       try 
                                       {
-                                          getFinalAnswers();//I receive a string
+                                          
+                                          while(System.currentTimeMillis() <= System.currentTimeMillis() + 6000) 
+                                          {
+                                                getFinalAnswers();
+                                          }
+                                         
+                                        //  getFinalAnswers();//I receive a string
                                           
                                       } catch (IOException ex) 
                                       {
@@ -84,12 +85,13 @@ public class TalkToCreditScore
                                   }else
                                   {
                                       
+                                      
                                      feetback = new JsonObject();
                                      feetback.addProperty("answer","not enough credit score");
-                                    
+                                     array.add(feetback);
                                   }
                                   
-                           return feetback;
+                           return array;
                                   
                         
 
@@ -102,7 +104,7 @@ public class TalkToCreditScore
             
             
             
-             public static void getFinalAnswers() throws IOException, TimeoutException
+             public  void getFinalAnswers() throws IOException, TimeoutException
         {
             
                 ConnectionFactory factory = new ConnectionFactory();
@@ -113,6 +115,7 @@ public class TalkToCreditScore
                 channel.queueDeclare(Aggregator.QUEUENAME, false, false, false, null);
                 System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
+                
                 Consumer consumer = new DefaultConsumer(channel) 
                 {
                     @Override
@@ -120,14 +123,14 @@ public class TalkToCreditScore
                         throws IOException 
                     {
                         String message = new String(body, "UTF-8");
+                        JsonObject json = new JsonParser().parse(message).getAsJsonObject();
+                        array.add(json);
                         System.out.println(" [x] Received '" + message + "'");
                     }
                 };
                 channel.basicConsume(Aggregator.QUEUENAME, true, consumer);
 
         }
-            
-            
 
 
                private  class GetBaseScore implements Callable
@@ -144,37 +147,14 @@ public class TalkToCreditScore
 //                         try
 //                            {
                                 int coeficient = getScore(ssn);//THIS IS OUR CREDITSCORE
-                                System.out.println("The coeeficient is "+coeficient);
-                                //now here has to talk to Theis shit 
-                                //make an http call to check if it sufficient
-                             //    HTTPDataHandler hh = new HTTPDataHandler();
-                             //    String  response = hh.GetHTTPData();
-                             //    System.out.println("The response is "+response);                               
-                             //    boolean  rulebase = Boolean.parseBoolean(response);
-                              
-//                                 if(rulebase)
-//                                    {
-//                                       return coeficient;
-//                                    }else
-//                                    {
-//                                       return -1;//Sorry no sufficient creditScore
-//                                    }
-                                
+                                System.out.println("The coeeficient is "+coeficient);                
                                 if (coeficient > 300)
-                                {
-//                                   Thread.sleep(new Random().nextInt(6)); 
+                                {                               
                                    return coeficient; // create a messaging service and continue;
-                                   
                                 }else
                                 {
-                                    //
                                     return -1;
                                 }
-
-//                            }catch (Exception ex) 
-//                            { 
-//                                return "Sorry programme completely crashed!!! because "+ex;
-//                            }
                    }
 
                     private int getScore(String ssn)

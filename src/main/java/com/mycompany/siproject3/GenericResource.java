@@ -5,6 +5,7 @@
  */
 package com.mycompany.siproject3;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +29,8 @@ import projectClasses.TalkToCreditScore;
  * @author Yoana
  */
 @Path("getinterest")
-public class GenericResource {
+public class GenericResource 
+{
 
     private TalkToCreditScore score;
     
@@ -51,16 +53,18 @@ public class GenericResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String putJson(String loan) 
+    public String putJson(String loan) throws InterruptedException, ExecutionException 
     {
 
 //        
-//            BankLoan loan4e = new BankLoan();
-//            JsonObject json = new JsonParser().parse(loan).getAsJsonObject();
+            BankLoan loan4e = new BankLoan();
+            JsonObject json = new JsonParser().parse(loan).getAsJsonObject();
 //
-//            loan4e.setSsn(json.get("ssn").getAsString());
-//            loan4e.setLoanAmount(json.get("loanAmount").getAsDouble());
-//            loan4e.setLoanDuration(json.get("loanDuration").getAsDouble());
+            loan4e.setSsn(json.get("ssn").getAsString());
+            loan4e.setLoanAmount(json.get("loanAmount").getAsDouble());
+            loan4e.setLoanDuration(json.get("loanDuration").getAsDouble());
+            JsonArray array = score.getYourScore(loan4e);
+            System.out.println("the jsonarray is "+array);
 //            //getting credit score as passing whole object consisting of ssn
 //            score = new TalkToCreditScore();
 //            int scoreR = -10;
@@ -83,7 +87,7 @@ public class GenericResource {
 //            JsonObject feetback = new JsonObject();
 //            feetback.addProperty("score",scoreR);
 //            return feetback.toString();
-            return "ha";
+            return array.toString();
     } // End of post()
     
     
