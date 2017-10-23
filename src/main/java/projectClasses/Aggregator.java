@@ -77,7 +77,7 @@ public class Aggregator
                             String result = message.substring(message.indexOf(":") + 1, message.indexOf(","));
                             System.out.println("result "+result);
                              double result4e = Double.parseDouble(result);
-                             if(result4e < 13)
+                             if(result4e < 13)//completion criteria
                              {
                                   publishData(message);
                                  
@@ -137,7 +137,7 @@ public class Aggregator
                       
                       
                       
-                 return     result = Double.parseDouble(intrest);
+                 return  result = Double.parseDouble(intrest);
 //                      System.out.println("The json object is "+json.toString());
                       
                        //publish to front 
